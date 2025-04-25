@@ -12,9 +12,10 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final String headerOwner = "X-Sharer-User-Id";
 
     @GetMapping
-    public Collection<ItemDto> findAll(@RequestHeader(value = "X-Sharer-User-Id") long ownerId) {
+    public Collection<ItemDto> findAll(@RequestHeader(value = headerOwner) long ownerId) {
         return itemService.findAll(ownerId);
     }
 
@@ -29,14 +30,14 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader(value = "X-Sharer-User-Id") long ownerId,
+    public ItemDto create(@RequestHeader(value = headerOwner) long ownerId,
                           @Valid @RequestBody ItemDto item) {
         return itemService.create(ownerId, item);
     }
 
     @PatchMapping("/{id}")
     public ItemDto update(@PathVariable long id,
-                          @RequestHeader(value = "X-Sharer-User-Id") long ownerId,
+                          @RequestHeader(value = headerOwner) long ownerId,
                           @Valid @RequestBody ItemDto item) {
         return itemService.update(id, ownerId, item);
     }
