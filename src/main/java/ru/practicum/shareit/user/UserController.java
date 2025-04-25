@@ -11,8 +11,9 @@ import java.util.Collection;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
-    
+
     @GetMapping
     public Collection<UserDto> findAll() {
         return userService.findAll();
