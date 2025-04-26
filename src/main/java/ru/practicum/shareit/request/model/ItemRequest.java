@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.request.model;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,10 +10,9 @@ import java.sql.Date;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingDto {
+public class ItemRequest {
     Long id;
-    Long itemId;
-    Date startOfBooking;
-    Date endOfBooking;
-    Boolean isConfirmed;
+    String description;
+    Long requestorId;
+    Date createdTime;
 }

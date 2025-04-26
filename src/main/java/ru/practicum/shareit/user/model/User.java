@@ -1,19 +1,15 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.user.model;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Date;
-
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingDto {
+public class User {
     Long id;
-    Long itemId;
-    Date startOfBooking;
-    Date endOfBooking;
-    Boolean isConfirmed;
+    String email;
+    String name;
 }
