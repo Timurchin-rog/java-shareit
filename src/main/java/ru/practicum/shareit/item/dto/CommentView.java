@@ -1,19 +1,18 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.item.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingDto {
+public class CommentView {
     Long id;
-    Long itemId;
-    Date startOfBooking;
-    Date endOfBooking;
-    Boolean isConfirmed;
+    String text;
+    String authorName;
+    LocalDateTime created;
 }

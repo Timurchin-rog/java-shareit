@@ -4,20 +4,20 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.model.Review;
+import ru.practicum.shareit.item.model.Comment;
 
 import java.util.Set;
 
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemDto {
+public class ItemRequest {
     Long id;
     String name;
     String description;
-    Long ownerId;
+    Long owner;
     Boolean available;
-    Set<Review> reviews;
+    Set<Comment> comments;
 
     public boolean hasName() {
         return ! (name == null || name.isBlank());
@@ -25,6 +25,10 @@ public class ItemDto {
 
     public boolean hasDescription() {
         return ! (description == null || description.isBlank());
+    }
+
+    public boolean hasOwner() {
+        return ! (owner == null);
     }
 
     public boolean hasAvailable() {

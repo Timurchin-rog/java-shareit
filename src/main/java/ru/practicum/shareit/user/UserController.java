@@ -1,11 +1,11 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dao.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -15,7 +15,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public Collection<UserDto> findAll() {
+    public List<UserDto> findAll() {
         return userService.findAll();
     }
 
@@ -25,12 +25,12 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto user) {
+    public UserDto create(@RequestBody UserDto user) {
         return userService.create(user);
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@PathVariable long id, @Valid @RequestBody UserDto user) {
+    public UserDto update(@PathVariable long id, @RequestBody UserDto user) {
         return userService.update(id, user);
     }
 
