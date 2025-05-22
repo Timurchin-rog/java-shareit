@@ -1,8 +1,8 @@
 package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.ItemRequest;
-import ru.practicum.shareit.item.dto.ItemView;
-import ru.practicum.shareit.item.dto.ItemsView;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemMapper {
-    public static ItemView mapToItemView(Item item) {
-        return ItemView.builder()
+    public static ItemDto mapToItemView(Item item) {
+        return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
@@ -21,8 +21,8 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemsView mapToItemsView(Item item, List<Comment> comments) {
-        return ItemsView.builder()
+    public static ItemDtoWithBooking mapToItemsView(Item item, List<Comment> comments) {
+        return ItemDtoWithBooking.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
@@ -32,8 +32,8 @@ public class ItemMapper {
                 .build();
     }
 
-    public static List<ItemView> mapToItemView(Iterable<Item> items) {
-        List<ItemView> itemsResult = new ArrayList<>();
+    public static List<ItemDto> mapToItemView(Iterable<Item> items) {
+        List<ItemDto> itemsResult = new ArrayList<>();
 
         for (Item item : items) {
             itemsResult.add(mapToItemView(item));

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingView;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dto.BookingRequest;
@@ -29,13 +29,13 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public List<BookingView> findAllOutgoing(long bookerId, String state) {
+    public List<BookingDto> findAllOutgoing(long bookerId, String state) {
         List<Booking> bookings = bookingRepository.findAllByBooker_Id(bookerId, Sort.by("end"));
         return BookingMapper.mapToBookingView(bookings);
     }
 
     @Override
-    public List<BookingView> findAllIncoming(long ownerId, String state) {
+    public List<BookingDto> findAllIncoming(long ownerId, String state) {
         if (userRepository.findById(ownerId).isEmpty())
                 throw new NotFoundException();
         if (itemRepository.findAllByOwner_id(ownerId).isEmpty())
@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingView findById(long id, long userId) {
+    public BookingDto findById(long id, long userId) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         return BookingMapper.mapToBookingView(booking);
@@ -53,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingView create(long bookerId, BookingRequest booking) {
+    public BookingDto create(long bookerId, BookingRequest booking) {
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException());
         Item item = itemRepository.findById(booking.getItemId())
@@ -66,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingView updateStatus(long id, long ownerId, boolean approved) {
+    public BookingDto updateStatus(long id, long ownerId, boolean approved) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         Item item = booking.getItem();

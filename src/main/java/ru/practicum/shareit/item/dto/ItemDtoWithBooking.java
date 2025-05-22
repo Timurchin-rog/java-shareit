@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemsView {
+public class ItemDtoWithBooking {
     Long id;
     String name;
     String description;

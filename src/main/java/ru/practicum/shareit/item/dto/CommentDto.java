@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentView {
+public class CommentDto {
     Long id;
     String text;
     String authorName;

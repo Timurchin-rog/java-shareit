@@ -8,10 +8,10 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.CommentView;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemRequest;
-import ru.practicum.shareit.item.dto.ItemView;
-import ru.practicum.shareit.item.dto.ItemsView;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
@@ -33,13 +33,13 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
 
     @Override
-    public List<ItemView> findAll(long ownerId) {
+    public List<ItemDto> findAll(long ownerId) {
         List<Item> items = itemRepository.findAllByOwner_id(ownerId);
         return ItemMapper.mapToItemView(items);
     }
 
     @Override
-    public ItemsView findById(long id) {
+    public ItemDtoWithBooking findById(long id) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         List<Comment> comments = commentRepository.findAllByItem_id(id);
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemView> findByText(String text) {
+    public List<ItemDto> findByText(String text) {
         if (text == null || text.isBlank())
             return new ArrayList<>();
         else
@@ -61,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemView create(long ownerId, ItemRequest item) {
+    public ItemDto create(long ownerId, ItemRequest item) {
         if (userRepository.findById(ownerId).isEmpty()) {
             throw new NotFoundException();
         }
@@ -74,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public CommentView createComment(long id, long authorId, Comment comment) {
+    public CommentDto createComment(long id, long authorId, Comment comment) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         User author = userRepository.findById(authorId)
@@ -86,7 +86,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemView update(long id, long ownerId, ItemRequest item) {
+    public ItemDto update(long id, long ownerId, ItemRequest item) {
         Item oldItem = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         if (oldItem.getOwner().getId() != ownerId) {

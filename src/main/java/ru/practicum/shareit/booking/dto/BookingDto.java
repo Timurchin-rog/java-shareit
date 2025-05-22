@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingView {
+public class BookingDto {
     Long id;
     Item item;
     LocalDateTime start;

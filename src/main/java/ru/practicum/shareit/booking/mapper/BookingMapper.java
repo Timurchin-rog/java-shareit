@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.mapper;
 
 import ru.practicum.shareit.booking.dto.BookingRequest;
-import ru.practicum.shareit.booking.dto.BookingView;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.model.Item;
@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingMapper {
-    public static BookingView mapToBookingView(Booking booking) {
-        return BookingView.builder()
+    public static BookingDto mapToBookingView(Booking booking) {
+        return BookingDto.builder()
                 .id(booking.getId())
                 .item(booking.getItem())
                 .start(booking.getStart())
@@ -22,8 +22,8 @@ public class BookingMapper {
                 .build();
     }
 
-    public static List<BookingView> mapToBookingView(Iterable<Booking> bookings) {
-        List<BookingView> bookingsResult = new ArrayList<>();
+    public static List<BookingDto> mapToBookingView(Iterable<Booking> bookings) {
+        List<BookingDto> bookingsResult = new ArrayList<>();
 
         for (Booking booking : bookings) {
             bookingsResult.add(mapToBookingView(booking));

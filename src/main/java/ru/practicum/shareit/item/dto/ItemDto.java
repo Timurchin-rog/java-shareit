@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemView {
+public class ItemDto {
     Long id;
     String name;
     String description;
