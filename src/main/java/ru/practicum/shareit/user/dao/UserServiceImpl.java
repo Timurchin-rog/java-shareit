@@ -1,90 +1,85 @@
 package ru.practicum.shareit.user.dao;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DuplicatedEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
-@Getter
-public class UserServiceInMemory implements UserService {
-    private final Map<Long, User> users = new HashMap<>();
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class UserServiceImpl implements UserService {
+    private final UserRepository repository;
 
     @Override
     public List<UserDto> findAll() {
-        return users.values().stream()
-                .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());
+        List<User> users = repository.findAll();
+        return UserMapper.mapToUserDto(users);
     }
 
     @Override
     public UserDto findById(long id) {
-        if (users.get(id) == null) {
-            throw new NotFoundException();
-        }
-        User user = users.get(id);
+        User user = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException());
         return UserMapper.mapToUserDto(user);
     }
 
+    @Transactional
     @Override
     public UserDto create(UserDto userFromRequest) {
-        if (userFromRequest.getEmail() == null) {
-            throw new ValidationException();
-        }
+        checkValidation(userFromRequest);
         if (checkDuplicatedEmail(userFromRequest)) {
             throw new DuplicatedEmailException();
         }
-        User newUser = User.builder()
-                .id(getNextId())
-                .email(userFromRequest.getEmail())
-                .name(userFromRequest.getName())
-                .build();
-        users.put(newUser.getId(), newUser);
+        User newUser = repository.save(UserMapper.mapToNewUser(userFromRequest));
+
         return UserMapper.mapToUserDto(newUser);
     }
 
+    @Transactional
     @Override
     public UserDto update(long id, UserDto userFromRequest) {
-        if (users.get(id) == null) {
-            throw new NotFoundException();
-        }
+        User oldUser = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException());
+
         if (checkDuplicatedEmail(userFromRequest)) {
             throw new DuplicatedEmailException();
         }
-        User oldUser = users.get(id);
         User newUser = UserMapper.updateUserFields(oldUser, userFromRequest);
-        users.put(newUser.getId(), newUser);
+        repository.save(newUser);
         return UserMapper.mapToUserDto(newUser);
     }
 
+    @Transactional
     @Override
     public void remove(long id) {
-        users.remove(id);
+        if (repository.findById(id).isEmpty()) {
+            throw new NotFoundException();
+        }
+        repository.deleteById(id);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    private void checkValidation(UserDto user) {
+        if (user.getEmail() == null || user.getEmail().isBlank())
+            throw new ValidationException();
+        if (!user.getEmail().contains("@"))
+            throw new ValidationException();
+        if (user.getName() == null || user.getName().isBlank())
+            throw new ValidationException();
     }
 
     private boolean checkDuplicatedEmail(UserDto userDto) {
-        return users.values().stream()
+        return repository.findAll().stream()
                 .filter(userEach -> !Objects.equals(userEach.getId(), userDto.getId()))
                 .anyMatch(userEach -> userEach.getEmail().equals(userDto.getEmail()));
     }
+
 }

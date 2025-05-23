@@ -7,18 +7,19 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "items")
+@Table(name = "comments")
 @Data
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Item {
+public class Comment {
 
-    public Item(String name, String description, User owner, Boolean available) {
-        this.name = name;
-        this.description = description;
-        this.owner = owner;
-        this.available = available;
+    public Comment(String text, User author, Item item) {
+        this.text = text;
+        this.author = author;
+        this.item = item;
     }
 
     @Id
@@ -26,15 +27,14 @@ public class Item {
     Long id;
 
     @Column(nullable = false)
-    String name;
-
-    @Column
-    String description;
+    String text;
 
     @ManyToOne
-    User owner;
+    User author;
 
-    @Column(nullable = false)
-    Boolean available;
+    @ManyToOne
+    Item item;
 
+    @Column
+    LocalDateTime created = LocalDateTime.now();
 }
