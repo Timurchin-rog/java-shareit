@@ -36,9 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserDto userFromRequest) {
         checkValidation(userFromRequest);
-        if (checkDuplicatedEmail(userFromRequest)) {
-            throw new DuplicatedEmailException();
-        }
+        checkDuplicatedEmail(userFromRequest.getEmail());
         User newUser = repository.save(UserMapper.mapToNewUser(userFromRequest));
 
         return UserMapper.mapToUserDto(newUser);
@@ -49,10 +47,7 @@ public class UserServiceImpl implements UserService {
     public UserDto update(long id, UserDto userFromRequest) {
         User oldUser = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
-
-        if (checkDuplicatedEmail(userFromRequest)) {
-            throw new DuplicatedEmailException();
-        }
+        checkDuplicatedEmail(userFromRequest.getEmail());
         User newUser = UserMapper.updateUserFields(oldUser, userFromRequest);
         repository.save(newUser);
         return UserMapper.mapToUserDto(newUser);
@@ -76,10 +71,9 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException();
     }
 
-    private boolean checkDuplicatedEmail(UserDto userDto) {
-        return repository.findAll().stream()
-                .filter(userEach -> !Objects.equals(userEach.getId(), userDto.getId()))
-                .anyMatch(userEach -> userEach.getEmail().equals(userDto.getEmail()));
+    private void checkDuplicatedEmail(String email) {
+        if (repository.findByEmailLike(email).isPresent())
+            throw new DuplicatedEmailException();
     }
 
 }

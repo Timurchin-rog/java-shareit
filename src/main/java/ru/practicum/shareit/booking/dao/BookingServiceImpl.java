@@ -9,15 +9,13 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.NotAvailableItemException;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotItemsException;
-import ru.practicum.shareit.exception.NotOwnerException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,25 +28,80 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> findAllOutgoing(long bookerId, String state) {
-        List<Booking> bookings = bookingRepository.findAllByBooker_Id(bookerId, Sort.by("end"));
-        return BookingMapper.mapToBookingView(bookings);
+        List<Booking> bookings;
+        if (state.toLowerCase().equals("current"))
+            bookings = bookingRepository
+                    .findAllByBooker_IdAndStartIsBeforeAndEndIsAfter(
+                            bookerId,
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    );
+        else if (state.toLowerCase().equals("past")) {
+            bookings = bookingRepository
+                    .findAllByBooker_IdAndEndIsBefore(
+                            bookerId,
+                            LocalDateTime.now()
+                    );
+        }
+        else if (state.toLowerCase().equals("future")) {
+            bookings = bookingRepository
+                    .findAllByBooker_IdAndStartIsAfter(
+                            bookerId,
+                            LocalDateTime.now()
+                    );
+        }
+        else if (state.toLowerCase().equals("waiting")
+        | state.toLowerCase().equals("rejected")) {
+            bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, state);
+        }
+        else
+            bookings = bookingRepository.findAllByBooker_Id(bookerId);
+        return BookingMapper.mapToBookingDto(bookings);
     }
 
     @Override
     public List<BookingDto> findAllIncoming(long ownerId, String state) {
         if (userRepository.findById(ownerId).isEmpty())
                 throw new NotFoundException();
-        if (itemRepository.findAllByOwner_id(ownerId).isEmpty())
+        List<Item> itemsOfOwner = itemRepository.findAllByOwner_id(ownerId);
+        if (itemsOfOwner.isEmpty())
             throw new NotItemsException();
-        List<Booking> bookings = bookingRepository.findAllForItems(ownerId, state);
-        return BookingMapper.mapToBookingView(bookings);
+        List<Booking> bookings;
+        if (state.toLowerCase().equals("current"))
+            bookings = bookingRepository
+                    .findAllByItemInAndStartIsBeforeAndEndIsAfter(
+                            itemsOfOwner,
+                            LocalDateTime.now(),
+                            LocalDateTime.now()
+                    );
+        else if (state.toLowerCase().equals("past")) {
+            bookings = bookingRepository
+                    .findAllByItemInAndEndIsBefore(
+                            itemsOfOwner,
+                            LocalDateTime.now()
+                    );
+        }
+        else if (state.toLowerCase().equals("future")) {
+            bookings = bookingRepository
+                    .findAllByItemInAndStartIsAfter(
+                            itemsOfOwner,
+                            LocalDateTime.now()
+                    );
+        }
+        else if (state.toLowerCase().equals("waiting")
+                | state.toLowerCase().equals("rejected")) {
+            bookings = bookingRepository.findAllByItemInAndStatus(itemsOfOwner, state);
+        }
+        else
+            bookings = bookingRepository.findAllByItemIn(itemsOfOwner);
+        return BookingMapper.mapToBookingDto(bookings);
     }
 
     @Override
     public BookingDto findById(long id, long userId) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
-        return BookingMapper.mapToBookingView(booking);
+        return BookingMapper.mapToBookingDto(booking);
     }
 
     @Transactional
@@ -60,8 +113,9 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException());
         if (!item.getAvailable())
             throw new NotAvailableItemException();
+        checkValidation(booking);
         Booking newBooking = bookingRepository.save(BookingMapper.mapToNewBooking(booking, item, booker));
-        return BookingMapper.mapToBookingView(newBooking);
+        return BookingMapper.mapToBookingDto(newBooking);
     }
 
     @Transactional
@@ -76,6 +130,12 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(Status.APPROVED);
         else
             booking.setStatus(Status.REJECTED);
-        return BookingMapper.mapToBookingView(booking);
+        return BookingMapper.mapToBookingDto(booking);
+    }
+
+    private void checkValidation(BookingRequest booking) {
+        if (booking.getStart().isAfter(booking.getEnd())
+        | booking.getStart().isEqual(booking.getEnd()))
+            throw new ValidationException();
     }
 }

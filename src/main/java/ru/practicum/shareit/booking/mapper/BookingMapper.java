@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingMapper {
-    public static BookingDto mapToBookingView(Booking booking) {
+    public static BookingDto mapToBookingDto(Booking booking) {
         return BookingDto.builder()
                 .id(booking.getId())
                 .item(booking.getItem())
@@ -22,11 +22,11 @@ public class BookingMapper {
                 .build();
     }
 
-    public static List<BookingDto> mapToBookingView(Iterable<Booking> bookings) {
+    public static List<BookingDto> mapToBookingDto(Iterable<Booking> bookings) {
         List<BookingDto> bookingsResult = new ArrayList<>();
 
         for (Booking booking : bookings) {
-            bookingsResult.add(mapToBookingView(booking));
+            bookingsResult.add(mapToBookingDto(booking));
         }
 
         return bookingsResult;

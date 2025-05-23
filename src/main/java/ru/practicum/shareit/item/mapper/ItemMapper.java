@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemMapper {
-    public static ItemDto mapToItemView(Item item) {
+    public static ItemDto mapToItemDto(Item item) {
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -21,7 +21,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemDtoWithBooking mapToItemsView(Item item, List<Comment> comments) {
+    public static ItemDtoWithBooking mapToItemDtoWithBooking(Item item, List<Comment> comments) {
         return ItemDtoWithBooking.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -32,11 +32,11 @@ public class ItemMapper {
                 .build();
     }
 
-    public static List<ItemDto> mapToItemView(Iterable<Item> items) {
+    public static List<ItemDto> mapToItemDto(Iterable<Item> items) {
         List<ItemDto> itemsResult = new ArrayList<>();
 
         for (Item item : items) {
-            itemsResult.add(mapToItemView(item));
+            itemsResult.add(mapToItemDto(item));
         }
 
         return itemsResult;
