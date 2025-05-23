@@ -21,7 +21,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findAll(long ownerId) {
         List<Item> items = itemRepository.findAllByOwner_id(ownerId);
-        return ItemMapper.mapToItemView(items);
+        return ItemMapper.mapToItemDto(items);
     }
 
     @Override
@@ -43,20 +42,18 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         List<Comment> comments = commentRepository.findAllByItem_id(id);
-        return ItemMapper.mapToItemsView(item, comments);
+        return ItemMapper.mapToItemDtoWithBooking(item, comments);
     }
 
     @Override
     public List<ItemDto> findByText(String text) {
+        List<Item> items;
         if (text == null || text.isBlank())
             return new ArrayList<>();
-        else
-            return itemRepository.findAll().stream()
-                    .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
-                            | item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                    .filter(Item::getAvailable)
-                    .map(ItemMapper::mapToItemView)
-                    .collect(Collectors.toList());
+        else {
+            items = itemRepository.findAllByText(text);
+            return ItemMapper.mapToItemDto(items);
+        }
     }
 
     @Transactional
@@ -69,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException());
         checkValidation(item);
         Item newItem = itemRepository.save(ItemMapper.mapToNewItem(item, owner));
-        return ItemMapper.mapToItemView(newItem);
+        return ItemMapper.mapToItemDto(newItem);
     }
 
     @Transactional
@@ -94,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item newItem = ItemMapper.updateItemFields(oldItem, item);
         itemRepository.save(newItem);
-        return ItemMapper.mapToItemView(newItem);
+        return ItemMapper.mapToItemDto(newItem);
     }
 
     @Transactional
