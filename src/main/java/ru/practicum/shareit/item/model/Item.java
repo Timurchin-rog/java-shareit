@@ -36,5 +36,4 @@ public class Item {
 
     @Column(nullable = false)
     Boolean available;
-
 }

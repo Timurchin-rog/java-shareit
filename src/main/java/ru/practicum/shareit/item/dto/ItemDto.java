@@ -4,10 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.user.model.User;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -18,5 +15,4 @@ public class ItemDto {
     String description;
     User owner;
     Boolean available;
-    List<Comment> comments;
 }

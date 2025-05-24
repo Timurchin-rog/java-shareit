@@ -11,7 +11,7 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
@@ -19,8 +19,12 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +42,26 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDtoWithBooking findById(long id) {
+    public ItemDtoFull findById(long id) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
         List<Comment> comments = commentRepository.findAllByItem_id(id);
-        return ItemMapper.mapToItemDtoWithBooking(item, comments);
+        List<Booking> bookings = bookingRepository.findAllByItem_Id(id);
+        Optional<Booking> lastBooking = bookings.stream()
+                .filter(booking -> booking.getEnd().toLocalDate().isBefore(LocalDate.now()))
+                .max(Comparator.comparing(Booking::getEnd))
+                .stream().findFirst();
+        LocalDate lastBookingDate = null;
+        if (lastBooking.isPresent())
+            lastBookingDate = lastBooking.get().getEnd().toLocalDate();
+        Optional<Booking> nextBooking = bookings.stream()
+                .filter(booking -> booking.getStart().toLocalDate().isAfter(LocalDate.now()))
+                .min(Comparator.comparing(Booking::getStart))
+                .stream().findFirst();
+        LocalDate nextBookingDate = null;
+        if (nextBooking.isPresent())
+            nextBookingDate = nextBooking.get().getStart().toLocalDate();
+        return ItemMapper.mapToItemDtoFull(item, comments, lastBookingDate, nextBookingDate);
     }
 
     @Override

@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.dao.ItemService;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Comment;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDtoWithBooking findById(@PathVariable long id) {
+    public ItemDtoFull findById(@PathVariable long id) {
         return itemService.findById(id);
     }
 
