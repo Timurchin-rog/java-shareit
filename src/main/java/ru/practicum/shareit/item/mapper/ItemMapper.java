@@ -2,11 +2,12 @@ package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +22,17 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemDtoWithBooking mapToItemDtoWithBooking(Item item, List<Comment> comments) {
-        return ItemDtoWithBooking.builder()
+    public static ItemDtoFull mapToItemDtoFull(Item item, List<Comment> comments,
+                                               LocalDate lastBooking, LocalDate nextBooking) {
+        return ItemDtoFull.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .owner(item.getOwner())
                 .available(item.getAvailable())
                 .comments(comments)
+                .lastBooking(lastBooking)
+                .nextBooking(nextBooking)
                 .build();
     }
 

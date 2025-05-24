@@ -7,19 +7,19 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemDtoWithBooking {
+public class ItemDtoFull {
     Long id;
     String name;
     String description;
     User owner;
     Boolean available;
-    LocalDateTime lastBooking;
-    LocalDateTime nextBooking;
+    LocalDate lastBooking;
+    LocalDate nextBooking;
     List<Comment> comments;
 }

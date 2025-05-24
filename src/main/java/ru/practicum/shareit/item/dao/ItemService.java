@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.dao;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Comment;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public interface ItemService {
     List<ItemDto> findAll(long ownerId);
 
-    ItemDtoWithBooking findById(long id);
+    ItemDtoFull findById(long id);
 
     List<ItemDto> findByText(String text);
 
