@@ -1,0 +1,55 @@
+package ru.practicum.shareit.booking.model;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "bookings")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Booking {
+
+    public Booking(Item item, LocalDateTime start, LocalDateTime end, User booker, BookingState status) {
+        this.item = item;
+        this.start = start;
+        this.end = end;
+        this.booker = booker;
+        this.status = status;
+    }
+
+    public Booking(Long id, Item item, User booker, BookingState status) {
+        this.id = id;
+        this.item = item;
+        this.booker = booker;
+        this.status = status;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
+    @ManyToOne
+    Item item;
+
+    @Column(name = "start_booking")
+    LocalDateTime start;
+
+    @Column(name = "end_booking")
+    LocalDateTime end;
+
+    @OneToOne
+    User booker;
+
+    @Enumerated(EnumType.STRING)
+    BookingState status;
+}
