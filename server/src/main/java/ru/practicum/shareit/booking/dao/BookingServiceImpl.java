@@ -52,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
                             now
                     );
         } else if (state.equalsIgnoreCase("waiting")
-                | state.equalsIgnoreCase("rejected")) {
+                || state.equalsIgnoreCase("rejected")) {
             bookings = bookingRepository.findAllByBooker_IdAndStatus(bookerId, state);
         } else
             bookings = bookingRepository.findAllByBooker_Id(bookerId);
@@ -88,7 +88,7 @@ public class BookingServiceImpl implements BookingService {
                             now
                     );
         } else if (state.equalsIgnoreCase("waiting")
-                | state.equalsIgnoreCase("rejected")) {
+                || state.equalsIgnoreCase("rejected")) {
             bookings = bookingRepository.findAllByItemInAndStatus(itemsOfOwner, state);
         } else
             bookings = bookingRepository.findAllByItemIn(itemsOfOwner);
